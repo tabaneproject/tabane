@@ -1,0 +1,42 @@
+{
+  "name": "@tabaneproject/tabane",
+  "version": "1.0.0",
+  "description": "Tabane is a Javascript Project Manager that can be used for bundling files for web or compiling certain Supersets and more.",
+  "main": "src/lib/tabane.js",
+  "directories": {
+    "shared": "src/shared",
+    "src": "src"
+  },
+  "bin": {
+    "tabane": "src/cli/interface.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tabaneproject/tabane.git"
+  },
+  "keywords": [
+    "tabane",
+    "packer",
+    "bundler",
+    "javascript",
+    "manager",
+    "project",
+    "project-manager",
+    "javascript-project-manager"
+  ],
+  "author": "citrizon",
+  "license": "BSL-1.0",
+  "bugs": {
+    "url": "https://github.com/tabaneproject/tabane/issues"
+  },
+  "homepage": "https://github.com/tabaneproject/tabane#readme",
+  "dependencies": {
+    "@inquirer/prompts": "^5.0.5",
+    "@tabaneproject/ecmagen": "^1.0.2",
+    "acorn": "^8.11.3",
+    "acorn-walk": "^8.3.2",
+    "commander": "^12.1.0",
+    "esmangle": "^1.0.1",
+    "yaml": "^2.4.2"
+  }
+}
