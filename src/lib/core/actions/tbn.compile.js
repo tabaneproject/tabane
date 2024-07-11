@@ -48,6 +48,7 @@ module.exports = Toolkit.module( ModuleGlobals => {
             main: 'index.js',
             sourceDir: '',
             outputDir: 'build',
+            relaxed: false,
             outscope: {
                 enabled: false,
                 outputDir: 'libs.tbn/'
@@ -95,8 +96,17 @@ module.exports = Toolkit.module( ModuleGlobals => {
             // Define a base Acorn configuration
             const aconf = {
                 ecmaVersion: 'latest',
-                sourceType: 'module'
+                sourceType: 'module',
+                allowHashBang: true
             };
+            
+            // If we are in relaxed mode, don't be strict
+            if ( document.relaxed ) {
+                aconf.allowReserved = true;
+                aconf.allowReturnOutsideFunction = true;
+                aconf.allowImportExportEverywhere = true;
+                aconf.allowAwaitOutsideFunction = true;
+            }
             
             // Parse the entire requirement tree and
             // perform caching to prevent infinite
