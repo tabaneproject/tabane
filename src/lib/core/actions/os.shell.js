@@ -45,7 +45,7 @@ module.exports = Toolkit.module( ModuleGlobals => {
         name: 'os.shell',
         options: {
             cmdlines: [],
-            env: {},
+            environment: {},
             skipOnError: false
         },
         action ( path, document ) {
@@ -60,7 +60,7 @@ module.exports = Toolkit.module( ModuleGlobals => {
                             TABANE_DOCPATH: path,
                             TABANE_SKIPPABLE: document.skipOnError,
                             TABANE_PROJECT_TAG: document.tag ?? 'unknown',
-                            ...document.env
+                            ...document.environment
                         }
                     }
                 );
