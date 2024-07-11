@@ -146,6 +146,7 @@ module.exports = Toolkit.module( ModuleGlobals => {
                 '.js': { type: 'script' },
                 '.mjs': { type: 'script' },
                 '.json': { type: 'object' },
+                ...ModuleGlobals.ITransit.get.extensions()
             };
             acorn.fetchPackage = source => {
                 
@@ -166,20 +167,20 @@ module.exports = Toolkit.module( ModuleGlobals => {
                     return { type: false };
                 } else if ( lstat.isDirectory() ) {
                     // We need to gather data from the package.json
-                    const ePackag = fss.existsSync( pth.join( source, 'package.json' ) )
-                    const cScript = fss.existsSync( pth.join( source, 'index.js' ) );
-                    const eScript = fss.existsSync( pth.join( source, 'index.mjs' ) );
-                    const eObject = fss.existsSync( pth.join( source, 'index.json' ) );
-                    if ( !ePackag && ( eScript || eObject ) )
-                        return { type: ( eScript || cScript ? 'script' : 'object' ), url: pth.join( source, 'index' + ( eScript || cScript ? 'script' : 'object' ) ) }
-                    else if ( ePackag ) {
+                    const ePackag = fss.existsSync( pth.join( source, 'package.json' ) );
+                    if ( !ePackag ) {
+                        for ( const [ ext, details ] of Object.entries( acorn.packageTypes ) )
+                            if ( fss.existsSync( 'index' + ext ) )
+                                return { type: details.type, url: 'index' + ext }
+                        return { type: false };
+                    } else {
                         let pkgjson = {};
                         try {
                             pkgjson = JSON.parse( fss.readFileSync( pth.join( source, 'package.json' ), { encoding: 'utf-8' } ) );
                         } catch (error) { return { type: false } }
                         if ( pkgjson.main )
                             return { type: 'script', url: pth.join( source, pkgjson.main ) }
-                    } else return { type: false }
+                    }
                 }
             }
             

@@ -68,7 +68,7 @@ class Tabane {
         const ITransit = ( new Transit() ).instance();
 
         // Setup Superset Base Class
-        const SupersetManager = require( './core/objects/SupersetManager' ).module( { ConsoleHost, ...Library } )
+        const SupersetManager = require( './core/objects/SupersetManager' ).module( { ConsoleHost, ITransit, ...Library } )
         
         // Setup a transit management interface
         const TransitManager = require( './core/objects/TransitManager' ).module( { ConsoleHost, ...Library } );

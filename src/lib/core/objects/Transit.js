@@ -41,6 +41,7 @@ module.exports = Toolkit.module( ModuleGlobals => {
             this.subactions = {};
             this.actions = {};
             this.supersets = {};
+            this.extensions = {};
         }
         
         // Create a Shared Transit Instance for Getter
@@ -58,6 +59,9 @@ module.exports = Toolkit.module( ModuleGlobals => {
                 supersets () {
                     return that.supersets;
                 },
+                extensions () {
+                    return that.extensions;
+                },
                 subaction ( name, actionName, actionType ) {
                     return that.subactions[ actionName ]?.[ actionType ]?.[ name ];
                 },
@@ -66,6 +70,9 @@ module.exports = Toolkit.module( ModuleGlobals => {
                 },
                 superset ( name ) {
                     return that.supersets[ name ];
+                },
+                extension ( ext ) {
+                    return that.extensions[ ext ];
                 }
             };
             const SetterInstance = {
@@ -108,16 +115,29 @@ module.exports = Toolkit.module( ModuleGlobals => {
                 },
                 superset ( supersetModule ) {
                     if ( that.supersets[ supersetModule.name ] )
-                        throw new ModuleGlobals.Errors.SupersetExistsError( `Given superset with the name '${ actionModule.name }' already exists.` );
+                        throw new ModuleGlobals.Errors.SupersetExistsError( `Given superset with the name '${ supersetModule.name }' already exists.` );
                     return that.supersets[ supersetModule.name ] = supersetModule;
                 },
                 supersets ( ...supersetModules ) {
                     for ( const supersetModule of supersetModules ) {
                         if ( that.supersets[ supersetModule.name ] )
-                            throw new ModuleGlobals.Errors.SupersetExistsError( `Given superset with the name '${ actionModule.name }' already exists.` );
+                            throw new ModuleGlobals.Errors.SupersetExistsError( `Given superset with the name '${ supersetModule.name }' already exists.` );
                         that.supersets[ supersetModule.name ] = supersetModule;
                     }
                     return supersetModules;
+                },
+                extension ( extensionModule ) {
+                    if ( that.extensions[ extensionModule.extension ] )
+                        throw new ModuleGlobals.Errors.ExtensionExistsError( `Given extension with the extension '${ extensionModule.extension }' already exists.` );
+                    return that.extensions[ extensionModule.extension ] = extensionModule;
+                },
+                extensions ( ...extensionModules ) {
+                    for ( const extensionModule of extensionModules ) {
+                        if ( that.extensions[ extensionModule.extension ] )
+                            throw new ModuleGlobals.Errors.ExtensionExistsError( `Given extension with the extension '${ extensionModule.extension }' already exists.` );
+                        that.extensions[ extensionModule.extension ] = extensionModule;
+                    }
+                    return extensionModules;
                 }
             };
             return {
