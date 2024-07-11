@@ -24,7 +24,23 @@
     "project-manager",
     "javascript-project-manager"
   ],
-  "author": "citrizon",
+  "maintainers": [
+    {
+      "name": "Botaro Shinomiya",
+      "email": "citrizon@waifu.club",
+      "web": "http://github.com/citrizon"
+    },
+    {
+      "name": "OSCILLIX",
+      "email": "oscillixonline@gmail.com",
+      "web": "http://github.com/Oscillix"
+    },
+    {
+      "name": "Bluskript",
+      "email": "bluskript@gmail.com",
+      "web": "http://github.com/bluskript"
+    }
+  ],
   "license": "BSL-1.0",
   "bugs": {
     "url": "https://github.com/tabaneproject/tabane/issues"
