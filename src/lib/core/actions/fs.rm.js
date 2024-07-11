@@ -43,14 +43,14 @@ module.exports = Toolkit.module( ModuleGlobals => {
     return {
         name: 'fs.rm',
         options: {
-            dir: 'build',
+            path: 'build',
             skippable: true,
             recursive: true
         },
         action ( path, document ) {
-            let csn = con.log( `Removing ${ clr.yellow( document.dir ) } Directory.` ).end;
-            if ( fss.existsSync( pth.join( path, document.dir ) ) ) {
-                fss.rmSync( pth.join( path, document.dir ), { recursive: document.recursive } );
+            let csn = con.log( `Removing ${ clr.yellow( document.path ) } Directory.` ).end;
+            if ( fss.existsSync( pth.join( path, document.path ) ) ) {
+                fss.rmSync( pth.join( path, document.path ), { recursive: document.recursive } );
             } else if ( document.skippable ) {
                 csn.warn( `Given directory doesn't exist, Skipping.` );
             } else {
