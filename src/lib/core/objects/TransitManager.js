@@ -70,7 +70,7 @@ module.exports = Toolkit.module( ModuleGlobals => {
                 CWD: this.cwd,
                 module: modl,
                 imports: function ( id ) {
-                    return that.RunScript( ModuleGlobals.IO.Path.join( scriptDir, id.endsWith( '.js' ) ? id : id + '.js' ) );
+                    return that.RunScript( id.startsWith( '/' ) ? id.endsWith( '.js' ) ? id : id + '.js' : ModuleGlobals.IO.Path.join( scriptDir, id.endsWith( '.js' ) ? id : id + '.js' ) );
                 },
                 __filename: scriptURI,
                 __dirname: scriptDir,
