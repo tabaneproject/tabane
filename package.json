@@ -48,7 +48,7 @@
   "homepage": "https://github.com/tabaneproject/tabane#readme",
   "dependencies": {
     "@inquirer/prompts": "^5.0.5",
-    "@tabaneproject/ecmagen": "^1.0.5",
+    "@tabaneproject/ecmagen": "^1.0.6",
     "acorn": "^8.11.3",
     "acorn-walk": "^8.3.2",
     "commander": "^12.1.0",
