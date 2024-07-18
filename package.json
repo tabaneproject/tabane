@@ -1,6 +1,5 @@
 {
   "name": "@tabaneproject/tabane",
-  "version": "1.0.0",
   "description": "Tabane is a Javascript Project Manager that can be used for bundling files for web or compiling certain Supersets and more.",
   "main": "src/lib/tabane.js",
   "directories": {
