@@ -54,26 +54,33 @@ module.exports = Toolkit.module( ModuleGlobals => {
         constructor ( transitInstance ) {
             this.transit = transitInstance;
             this.toolkitContext = new TransitToolkit( transitInstance );
+            this.cwd = process.cwd();
         }
-        Execute ( settings = {} ) {
-            // Get VM Library
-            const vm = ModuleGlobals.Process.JavascriptVM;
-            
-            // Create Context
-            const context = vm.createContext( {
+        RunScript ( scriptURI, settings = {} ) {
+            const modl = { exports: {} };
+            const scriptDir = ModuleGlobals.IO.Path.join( scriptURI, '../' );
+            const context = ModuleGlobals.Process.JavascriptVM.createContext( {
+                ConsoleHost: ModuleGlobals.ConsoleHost,
+                IO: ModuleGlobals.IO,
                 TransitToolkit: this.toolkitContext,
                 Transit: this.toolkitContext.Transit.bind( this.toolkitContext ),
-                ConsoleHost: ModuleGlobals.ConsoleHost,
                 console,
                 Object,
+                CWD: this.cwd,
+                module: modl,
+                imports: function ( id ) {
+                    return runScript( pth.join( scriptDir, id.endsWith( '.js' ) ? id : id + '.js' ) );
+                },
+                __filename: scriptURI,
+                __dirname: scriptDir,
                 ...( settings?.options?.globals ?? {} )
             } );
-            
-            // Create Script
-            const script = new vm.Script( settings?.code ?? '', { filename: settings?.options?.referenceFilename ?? 'Tabane:TransitInvokationManager' } );
-            
-            // Run the script;
-            return script.runInContext( context );
+            const script = new ModuleGlobals.Process.JavascriptVM.Script( settings?.code ?? fss.readFileSync( scriptURI, { encoding: 'utf-8' } ), { filename: scriptURI ?? 'Tabane:TransitInvocationService' } );
+            const retval = script.runInContext( context );
+            return modl.exports ?? modl ?? retval;
+        }
+        Execute ( settings = {} ) {
+            return this.RunScript( settings?.path, settings )
         }
     }
 } );

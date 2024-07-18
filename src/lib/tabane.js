@@ -98,6 +98,7 @@ class Tabane {
         ].map( modStr => {
             // Execute a sample transit
             ITransitManager.Execute( {
+                path: Library.IO.Path.join( __dirname, modStr ),
                 code: Library.IO.FileSystem.readFileSync( require.resolve( modStr ), { encoding: 'utf-8' } ),
                 options: {
                     globals: { Library, SupersetManager }
@@ -107,7 +108,8 @@ class Tabane {
         
         // Import extra transits given by the constructor
         Transits.forEach( tran => ITransitManager.Execute( {
-            code: tran,
+            path: tran?.url,
+            code: tran?.code,
             options: {
                 globals: { Library, SupersetManager }
             }

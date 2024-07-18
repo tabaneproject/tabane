@@ -39,7 +39,8 @@ class TransitsStore {
         transitsStoreUrls.forEach( url => {
             if ( !Library.IO.FileSystem.existsSync( url ) ) return;
             this.transits = Library.IO.FileSystem.readdirSync( url, { withFileTypes: true } ).filter( e => e.isFile() ).map( e => {
-                return Library.IO.FileSystem.readFileSync( Library.IO.Path.join( url, e.name ), { encoding: 'utf-8' } );
+                const fileurl = Library.IO.Path.join( url, e.name );
+                return { code: Library.IO.FileSystem.readFileSync( fileurl, { encoding: 'utf-8' } ), url: fileurl }
             } );
         } );
     }
