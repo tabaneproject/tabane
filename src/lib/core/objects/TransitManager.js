@@ -57,6 +57,7 @@ module.exports = Toolkit.module( ModuleGlobals => {
             this.cwd = process.cwd();
         }
         RunScript ( scriptURI, settings = {} ) {
+            const that = this;
             const modl = { exports: {} };
             const scriptDir = ModuleGlobals.IO.Path.join( scriptURI, '../' );
             const context = ModuleGlobals.Process.JavascriptVM.createContext( {
@@ -69,7 +70,7 @@ module.exports = Toolkit.module( ModuleGlobals => {
                 CWD: this.cwd,
                 module: modl,
                 imports: function ( id ) {
-                    return runScript( pth.join( scriptDir, id.endsWith( '.js' ) ? id : id + '.js' ) );
+                    return that.RunScript( pth.join( scriptDir, id.endsWith( '.js' ) ? id : id + '.js' ) );
                 },
                 __filename: scriptURI,
                 __dirname: scriptDir,
