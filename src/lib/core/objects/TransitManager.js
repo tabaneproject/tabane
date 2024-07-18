@@ -76,12 +76,12 @@ module.exports = Toolkit.module( ModuleGlobals => {
                 __dirname: scriptDir,
                 ...( settings?.options?.globals ?? {} )
             } );
-            const script = new ModuleGlobals.Process.JavascriptVM.Script( settings?.code ?? fss.readFileSync( scriptURI, { encoding: 'utf-8' } ), { filename: scriptURI ?? 'Tabane:TransitInvocationService' } );
+            const script = new ModuleGlobals.Process.JavascriptVM.Script( settings?.code ?? ModuleGlobals.IO.FileSystem.readFileSync( scriptURI, { encoding: 'utf-8' } ), { filename: scriptURI ?? 'Tabane:TransitInvocationService' } );
             const retval = script.runInContext( context );
             return modl.exports ?? modl ?? retval;
         }
         Execute ( settings = {} ) {
-            return this.RunScript( settings?.path, settings )
+            return this.RunScript( settings?.path, settings );
         }
     }
 } );
