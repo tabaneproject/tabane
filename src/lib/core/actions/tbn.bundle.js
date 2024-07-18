@@ -46,187 +46,136 @@ function TabaneBundleRequireTransit ( ASTTools, ASTCollection, ASTMainPointer ) 
     //     return function (name) {
     //         if ( files[ name ] ) {
     //             let mdl = { exports: {} };
-    //             files[ name ]( mdl, mdl.exports );
-    //             return mdl.exports.default ?? mdl.exports;
+    //             let mdx = files[ name ]( mdl, mdl.exports );
+    //             return mdl?.exports?.__tabane_es_module ? mdl.exports.default : mdx ?? mdl.exports;
     //         } else throw new Error( 'Required Tabane Module is not found. This shouldn\'t be happening since this is a pretty unexpected behavior. Aborting execution.' );
     //     };
     // } )()
     let section1 = {
         "type": "VariableDeclaration",
-        "declarations": [
-            {
-                "type": "VariableDeclarator",
-                "id": {
-                    "type": "Identifier",
-                    "name": "__tabane_require"
-                },
-                "init": {
-                    "type": "CallExpression",
-                    "callee": {
-                        "type": "FunctionExpression",
-                        "id": null,
-                        "expression": false,
-                        "generator": false,
-                        "async": false,
-                        "params": [],
-                        "body": {
-                            "type": "BlockStatement",
-                            "body": [
-                                {
-                                    "type": "VariableDeclaration",
-                                    "declarations": [
-                                        {
-                                            "type": "VariableDeclarator",
-                                            "id": {
-                                                "type": "Identifier",
-                                                "name": "files"
+        "declarations": [{
+            "type": "VariableDeclarator",
+            "id": {
+                "type": "Identifier",
+                "name": "__tabane_require"
+            },
+            "init": {
+                "type": "CallExpression",
+                "callee": {
+                    "type": "FunctionExpression",
+                    "id": null,
+                    "expression": false,
+                    "generator": false,
+                    "async": false,
+                    "params": [],
+                    "body": {
+                        "type": "BlockStatement",
+                        "body": [{
+                                "type": "VariableDeclaration",
+                                "declarations": [{
+                                    "type": "VariableDeclarator",
+                                    "id": {
+                                        "type": "Identifier",
+                                        "name": "files"
+                                    },
+                                    "init": {
+                                        "type": "ObjectExpression",
+                                        "properties": Object.entries(ASTCollection).map(([AbsPath, AST]) => ASTTools.PropertyNode(
+                                            AST.pointer,
+                                            ASTTools.BundleParcelFunctionNode(AST.contents.body)
+                                        ))
+                                    }
+                                }],
+                                "kind": "const"
+                            },
+                            {
+                                "type": "ReturnStatement",
+                                "argument": {
+                                    "type": "FunctionExpression",
+                                    "id": null,
+                                    "expression": false,
+                                    "generator": false,
+                                    "async": false,
+                                    "params": [{
+                                        "type": "Identifier",
+                                        "name": "name"
+                                    }],
+                                    "body": {
+                                        "type": "BlockStatement",
+                                        "body": [{
+                                            "type": "IfStatement",
+                                            "test": {
+                                                "type": "MemberExpression",
+                                                "object": {
+                                                    "type": "Identifier",
+                                                    "name": "files"
+                                                },
+                                                "property": {
+                                                    "type": "Identifier",
+                                                    "name": "name"
+                                                },
+                                                "computed": true,
+                                                "optional": false
                                             },
-                                            "init": {
-                                                "type": "ObjectExpression",
-                                                "properties": Object.entries( ASTCollection ).map( ( [ AbsPath, AST ] ) => ASTTools.PropertyNode(
-                                                    AST.pointer,
-                                                    ASTTools.BundleParcelFunctionNode( AST.contents.body )
-                                                ) )
-                                            }
-                                        }
-                                    ],
-                                    "kind": "const"
-                                },
-                                {
-                                    "type": "ReturnStatement",
-                                    "argument": {
-                                        "type": "FunctionExpression",
-                                        "id": null,
-                                        "expression": false,
-                                        "generator": false,
-                                        "async": false,
-                                        "params": [
-                                            {
-                                                "type": "Identifier",
-                                                "name": "name"
-                                            }
-                                        ],
-                                        "body": {
-                                            "type": "BlockStatement",
-                                            "body": [
-                                                {
-                                                    "type": "IfStatement",
-                                                    "test": {
-                                                        "type": "MemberExpression",
-                                                        "object": {
-                                                            "type": "Identifier",
-                                                            "name": "files"
-                                                        },
-                                                        "property": {
-                                                            "type": "Identifier",
-                                                            "name": "name"
-                                                        },
-                                                        "computed": true,
-                                                        "optional": false
+                                            "consequent": {
+                                                "type": "BlockStatement",
+                                                "body": [{
+                                                        "type": "VariableDeclaration",
+                                                        "declarations": [{
+                                                            "type": "VariableDeclarator",
+                                                            "id": {
+                                                                "type": "Identifier",
+                                                                "name": "mdl"
+                                                            },
+                                                            "init": {
+                                                                "type": "ObjectExpression",
+                                                                "properties": [{
+                                                                    "type": "Property",
+                                                                    "method": false,
+                                                                    "shorthand": false,
+                                                                    "computed": false,
+                                                                    "key": {
+                                                                        "type": "Identifier",
+                                                                        "name": "exports"
+                                                                    },
+                                                                    "value": {
+                                                                        "type": "ObjectExpression",
+                                                                        "properties": []
+                                                                    },
+                                                                    "kind": "init"
+                                                                }]
+                                                            }
+                                                        }],
+                                                        "kind": "let"
                                                     },
-                                                    "consequent": {
-                                                        "type": "BlockStatement",
-                                                        "body": [
-                                                            {
-                                                                "type": "VariableDeclaration",
-                                                                "declarations": [
-                                                                    {
-                                                                        "type": "VariableDeclarator",
-                                                                        "id": {
-                                                                            "type": "Identifier",
-                                                                            "name": "mdl"
-                                                                        },
-                                                                        "init": {
-                                                                            "type": "ObjectExpression",
-                                                                            "properties": [
-                                                                                {
-                                                                                    "type": "Property",
-                                                                                    "method": false,
-                                                                                    "shorthand": false,
-                                                                                    "computed": false,
-                                                                                    "key": {
-                                                                                        "type": "Identifier",
-                                                                                        "name": "exports"
-                                                                                    },
-                                                                                    "value": {
-                                                                                        "type": "ObjectExpression",
-                                                                                        "properties": []
-                                                                                    },
-                                                                                    "kind": "init"
-                                                                                }
-                                                                            ]
-                                                                        }
-                                                                    }
-                                                                ],
-                                                                "kind": "let"
+                                                    {
+                                                        "type": "VariableDeclaration",
+                                                        "declarations": [{
+                                                            "type": "VariableDeclarator",
+                                                            "id": {
+                                                                "type": "Identifier",
+                                                                "name": "mdx"
                                                             },
-                                                            {
-                                                                "type": "ExpressionStatement",
-                                                                "expression": {
-                                                                    "type": "CallExpression",
-                                                                    "callee": {
-                                                                        "type": "MemberExpression",
-                                                                        "object": {
-                                                                            "type": "Identifier",
-                                                                            "name": "files"
-                                                                        },
-                                                                        "property": {
-                                                                            "type": "Identifier",
-                                                                            "name": "name"
-                                                                        },
-                                                                        "computed": true,
-                                                                        "optional": false
+                                                            "init": {
+                                                                "type": "CallExpression",
+                                                                "callee": {
+                                                                    "type": "MemberExpression",
+                                                                    "object": {
+                                                                        "type": "Identifier",
+                                                                        "name": "files"
                                                                     },
-                                                                    "arguments": [
-                                                                        {
-                                                                            "type": "Identifier",
-                                                                            "name": "mdl"
-                                                                        },
-                                                                        {
-                                                                            "type": "MemberExpression",
-                                                                            "object": {
-                                                                                "type": "Identifier",
-                                                                                "name": "mdl"
-                                                                            },
-                                                                            "property": {
-                                                                                "type": "Identifier",
-                                                                                "name": "exports"
-                                                                            },
-                                                                            "computed": false,
-                                                                            "optional": false
-                                                                        }
-                                                                    ],
+                                                                    "property": {
+                                                                        "type": "Identifier",
+                                                                        "name": "name"
+                                                                    },
+                                                                    "computed": true,
                                                                     "optional": false
-                                                                }
-                                                            },
-                                                            {
-                                                                "type": "ReturnStatement",
-                                                                "argument": {
-                                                                    "type": "LogicalExpression",
-                                                                    "left": {
-                                                                        "type": "MemberExpression",
-                                                                        "object": {
-                                                                            "type": "MemberExpression",
-                                                                            "object": {
-                                                                                "type": "Identifier",
-                                                                                "name": "mdl"
-                                                                            },
-                                                                            "property": {
-                                                                                "type": "Identifier",
-                                                                                "name": "exports"
-                                                                            },
-                                                                            "computed": false,
-                                                                            "optional": false
-                                                                        },
-                                                                        "property": {
-                                                                            "type": "Identifier",
-                                                                            "name": "default"
-                                                                        },
-                                                                        "computed": false,
-                                                                        "optional": false
+                                                                },
+                                                                "arguments": [{
+                                                                        "type": "Identifier",
+                                                                        "name": "mdl"
                                                                     },
-                                                                    "operator": "??",
-                                                                    "right": {
+                                                                    {
                                                                         "type": "MemberExpression",
                                                                         "object": {
                                                                             "type": "Identifier",
@@ -239,43 +188,120 @@ function TabaneBundleRequireTransit ( ASTTools, ASTCollection, ASTMainPointer ) 
                                                                         "computed": false,
                                                                         "optional": false
                                                                     }
+                                                                ],
+                                                                "optional": false
+                                                            }
+                                                        }],
+                                                        "kind": "let"
+                                                    },
+                                                    {
+                                                        "type": "ReturnStatement",
+                                                        "argument": {
+                                                            "type": "ConditionalExpression",
+                                                            "test": {
+                                                                "type": "ChainExpression",
+                                                                "expression": {
+                                                                    "type": "MemberExpression",
+                                                                    "object": {
+                                                                        "type": "MemberExpression",
+                                                                        "object": {
+                                                                            "type": "Identifier",
+                                                                            "name": "mdl"
+                                                                        },
+                                                                        "property": {
+                                                                            "type": "Identifier",
+                                                                            "name": "exports"
+                                                                        },
+                                                                        "computed": false,
+                                                                        "optional": true
+                                                                    },
+                                                                    "property": {
+                                                                        "type": "Identifier",
+                                                                        "name": "__tabane_es_module"
+                                                                    },
+                                                                    "computed": false,
+                                                                    "optional": true
+                                                                }
+                                                            },
+                                                            "consequent": {
+                                                                "type": "MemberExpression",
+                                                                "object": {
+                                                                    "type": "MemberExpression",
+                                                                    "object": {
+                                                                        "type": "Identifier",
+                                                                        "name": "mdl"
+                                                                    },
+                                                                    "property": {
+                                                                        "type": "Identifier",
+                                                                        "name": "exports"
+                                                                    },
+                                                                    "computed": false,
+                                                                    "optional": false
+                                                                },
+                                                                "property": {
+                                                                    "type": "Identifier",
+                                                                    "name": "default"
+                                                                },
+                                                                "computed": false,
+                                                                "optional": false
+                                                            },
+                                                            "alternate": {
+                                                                "type": "LogicalExpression",
+                                                                "left": {
+                                                                    "type": "Identifier",
+                                                                    "name": "mdx"
+                                                                },
+                                                                "operator": "??",
+                                                                "right": {
+                                                                    "type": "MemberExpression",
+                                                                    "object": {
+                                                                        "type": "Identifier",
+                                                                        "name": "mdl"
+                                                                    },
+                                                                    "property": {
+                                                                        "type": "Identifier",
+                                                                        "name": "exports"
+                                                                    },
+                                                                    "computed": false,
+                                                                    "optional": false
                                                                 }
                                                             }
-                                                        ]
-                                                    },
-                                                    "alternate": {
-                                                        "type": "ThrowStatement",
-                                                        "argument": {
-                                                            "type": "NewExpression",
-                                                            "callee": {
-                                                                "type": "Identifier",
-                                                                "name": "Error"
-                                                            },
-                                                            "arguments": [
-                                                                {
-                                                                    "type": "Literal",
-                                                                    "value": "Required Tabane Module is not found. This shouldn't be happening since this is a pretty unexpected behavior. Aborting execution.",
-                                                                    "raw": "'Required Tabane Module is not found. This shouldn\\'t be happening since this is a pretty unexpected behavior. Aborting execution.'"
-                                                                }
-                                                            ]
                                                         }
                                                     }
+                                                ]
+                                            },
+                                            "alternate": {
+                                                "type": "ThrowStatement",
+                                                "argument": {
+                                                    "type": "NewExpression",
+                                                    "callee": {
+                                                        "type": "Identifier",
+                                                        "name": "Error"
+                                                    },
+                                                    "arguments": [{
+                                                        "type": "Literal",
+                                                        "value": "Required Tabane Module is not found. This shouldn't be happening since this is a pretty unexpected behavior. Aborting execution.",
+                                                        "raw": "'Required Tabane Module is not found. This shouldn\\'t be happening since this is a pretty unexpected behavior. Aborting execution.'"
+                                                    }]
                                                 }
-                                            ]
-                                        }
+                                            }
+                                        }]
                                     }
                                 }
-                            ]
-                        }
-                    },
-                    "arguments": [],
-                    "optional": false
-                }
+                            }
+                        ]
+                    }
+                },
+                "arguments": [],
+                "optional": false
             }
-        ],
+        }],
         "kind": "const"
     },
-    section2 = ASTTools.CallNode( '__tabane_require', ASTTools.ConvertType( ASTMainPointer, true ) )
+    section2 = {
+        type: 'ReturnStatement',
+        argument: ASTTools.CallNode( '__tabane_require', ASTTools.ConvertType( ASTMainPointer, true ) )
+    }
     return [ section1, section2 ];
 }
 
@@ -299,6 +325,8 @@ module.exports = Toolkit.module( ModuleGlobals => {
             traceHide: null,
             compact: true,
             relaxed: false,
+            ecmaVersion: 'latest',
+            sourceType: 'module',
             superset: [ 'esconv' ],
             transitsOrder: []
         },
@@ -307,6 +335,11 @@ module.exports = Toolkit.module( ModuleGlobals => {
             // up our bundles, right?
             if ( document.superset.indexOf( 'esconv' ) === -1 )
                 document.superset.push( 'esconv' );
+            
+            // Make sure our target generator exists. Otherwise
+            // stop the program from running
+            const target = transits.get.subaction( document.target, 'tbn.bundle', 'target' );
+            if ( !target ) throw new ModuleGlobals.Errors.TargetTransitDoesNotExistError( `Target with the name '${ clr.yellow( document.target ) }' does not exists.` );
             
             // Log the operation we are about to perform.
             const featureList = Object.entries( {
@@ -346,9 +379,10 @@ module.exports = Toolkit.module( ModuleGlobals => {
             
             // Define a base Acorn configuration
             const aconf = {
-                ecmaVersion: 'latest',
-                sourceType: 'module',
-                allowHashBang: true
+                ecmaVersion: document.ecmaVersion ?? 'latest',
+                sourceType: document.sourceType ?? 'module',
+                allowHashBang: true,
+                allowAwaitOutsideFunction: false // pretty much a bundler-specific thing
             };
             
             // If we are in relaxed mode, don't be strict
@@ -364,7 +398,7 @@ module.exports = Toolkit.module( ModuleGlobals => {
             // loops
             let bundleASTCollection = {},
                 bundleASTCounter    = 0;
-            function RecursiveRequireWalk ( rPath ) {
+            function RecursiveRequireWalk ( rPath, type = 'script' ) {
                 // If we have the path in the cache, return it lol
                 if ( path !== mainFilePath && bundleASTCollection[ path ] ) return;
                 
@@ -373,15 +407,26 @@ module.exports = Toolkit.module( ModuleGlobals => {
                 bcon.next.log( `Processing ${ clr.yellow( rPath.replace( sourcePath, '.' ) ) }` );
                 
                 // Gather the code's AST by given path
-                const AST = acorn.parse(
+                const AST = type === 'script' ? acorn.parse(
                     fss.readFileSync(
                         rPath,
                         { encoding: 'utf-8' }
                     ), aconf
-                );
+                ) : {
+                    type: 'Program',
+                    body: [ {
+                        type: 'ReturnStatement',
+                        argument: acorn.parseExpressionAt(
+                            fss.readFileSync(
+                                rPath,
+                                { encoding: 'utf-8' }
+                            ), 0, aconf
+                        )
+                    } ]
+                };
                 
                 // Walk through the require/import statements
-                acorn.inspectRequires( AST, ( value, node ) => {
+                if ( type === 'script' ) acorn.inspectRequires( AST, ( value, node ) => {
                     const absLoc = acorn.fetchPackage( value.startsWith( '/' ) ? value : pth.join( rPath, '../' , value ) );
                     if ( !absLoc?.type )
                         return value;
@@ -390,7 +435,7 @@ module.exports = Toolkit.module( ModuleGlobals => {
                         return bundleASTCollection[ absLoc.url ].pointer;
                     bundleASTCollection[ absLoc.url ] = {
                         pointer: "" + ( ++bundleASTCounter ),
-                        contents: RecursiveRequireWalk( absLoc.url )
+                        contents: RecursiveRequireWalk( absLoc.url, absLoc.type )
                     };
                     return bundleASTCollection[ absLoc.url ].pointer;
                 } );
@@ -426,7 +471,7 @@ module.exports = Toolkit.module( ModuleGlobals => {
             // Pack everything up now :3
             con.newline();
             con.log( `Packing up the ${ clr.magenta( 'Syntax Tree' ) }.` );
-            let generated = transits.get.subaction( document.target, 'tbn.bundle', 'target' )?.action(
+            const generated = target.action(
                 path, document, [
                     requireOutputs[ 0 ],
                     ...transitOutputs,
@@ -434,37 +479,47 @@ module.exports = Toolkit.module( ModuleGlobals => {
                 ]
             );
             
+            // Generate the output
+            con.log( `Generating Javascript Code.` );
+            let output = gen.generate( generated, {
+                format: { compact: document.compact },
+                env: document.environment
+            } );
+            
             // Get compact or the beautiful version of the
             // generated code.
+            let map = null;
             if ( document.compact ) {
-                con.log( `Uglifying and optimizing the output.` );
-                const esmangle = require( 'esmangle' );
+                con.log( `Compacting the output.` );
+                const optimizer = require( 'terser' );
                 try {
-                    generated = esmangle.mangle( esmangle.optimize( generated, null ) );
+                    const minified = optimizer.minify_sync( output, { sourceMap: true } );
+                    output = minified.code;
+                    map = minified.decoded_map;
+                    map.file = document.outputFile;
+                    if ( document.traceHide ) {
+                        map.sources = [ document.traceHide ];
+                        map.mappings = ";;;;AAAA;AAAA;AAAA;AAAA;";
+                    }
                 } catch (error) {
                     console.error(error);
                 }
             }
-            
-            // Generate the output
-            con.log( `Generating Javascript Code.` );
-            const output = gen.generate( generated, {
-                format: { compact: document.compact },
-                env: document.environment
-            } );
             
             // Create the build dir if it doesn't exists
             if ( !fss.existsSync( buildPath ) )
                 fss.mkdirSync( buildPath, { recursive: true } );
             
             // Create a sourcemap suffix to hide traceback
+            if ( document.traceHide )
+                con.log( 'Creating a fake SourceMap.' );
             const mapSuffix = document.traceHide ? '\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,' + Buffer.from( JSON.stringify(
-                {
+                map ?? {
                     version: 3,
                     file: document.outputFile,
-                    sources: document.traceHide ? [ ( document.traceHide == true ? document.tag ?? 'Unknown' : document.traceHide ) ]: [],
-                    names: [ "" ],
-                    mappings: ";;;;AAAA;AAAA;"
+                    sources: document.traceHide ? [ document.traceHide ]: [],
+                    names: [],
+                    mappings: ";;;;AAAA;AAAA;AAAA;AAAA;"
                 }
             ) ).toString( 'base64' ) : '';
             

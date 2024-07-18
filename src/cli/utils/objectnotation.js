@@ -33,36 +33,26 @@
     THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
 */
 
-const Toolkit = require( '../../shared/toolkit' );
-const TabaneDocumentBase = require( './TabaneDocumentBase' );
-
-module.exports = Toolkit.module( ModuleGlobals => {
-    return class TabaneSingularDocument extends TabaneDocumentBase {
-        constructor ( data, optionExtensions = {} ) {
-            // Initialize the base
-            super( ModuleGlobals.OptionExtensions );
-            
-            // Define the unscopable section and the
-            // temporary data variable.
-            const unscope = this[ Symbol.unscopables ], tmpdata = this.getData();
-            
-            // Check if the action exists, if so inherit
-            // it's options.
-            if ( !ModuleGlobals.Actions[ data.action ]?.options )
-                throw new ModuleGlobals.Errors.TabaneDocumentError( `Given action with the name "${ data.action }" does not exist.` );
-            tmpdata.action = data.action;
-            Object.assign( tmpdata, ModuleGlobals.Actions[ data.action ].options );
-            
-            // Append option extensions to the document
-            // options.
-            Object.assign( tmpdata, optionExtensions );
-            
-            // Perform strict merging
-            unscope.data = Object.strict( tmpdata, data );
-        }
-        perform ( path, ...extras ) {
-            let data = this.getData();
-            return ModuleGlobals.Actions[ data.action ].action.call( this, path, data, ...extras );
-        }
+class NamespaceAccessory {
+    static get ( object, notation ) {
+        return notation.split( '.' ).reduce( ( a, b ) => a?.[ b ], object );
     }
-} );
+    static set ( object, notation, value ) {
+        const keys = notation.split( '.' );
+        const setKey = keys.pop();
+        return keys.reduce( ( a, b ) => a[ b ] ?? ( a[ b ] = {} ), object )[ setKey ] = value
+    }
+    static list ( object ) {
+        const valList = {};
+        void function listInner ( obj, parents = [] ) {
+            const parenTemp = parents.join( '.' );
+            Object.entries( obj ).forEach( ( [ key, val ] ) => {
+                if ( typeof val === "object" ) return listInner( val, [ ...parents, key ] );
+                valList[ [ parenTemp, key ].join( '.' ) ] = val
+            } )
+        } ( object );
+        return valList;
+    }
+}
+
+module.exports = NamespaceAccessory;

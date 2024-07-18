@@ -40,7 +40,7 @@
  * @param {Number} [length]
  * @return {String}
  */
-function strTruncate(str, length = 40) {
+function strTruncate(str, length = 100) {
 	let dots = str.length > length ? "..." : "";
 	return str.substring(0, length) + dots;
 }

@@ -42,6 +42,7 @@ module.exports = Toolkit.module( ModuleGlobals => {
             this.actions = {};
             this.supersets = {};
             this.extensions = {};
+            this.optionExtensions = {};
         }
         
         // Create a Shared Transit Instance for Getter
@@ -61,6 +62,9 @@ module.exports = Toolkit.module( ModuleGlobals => {
                 },
                 extensions () {
                     return that.extensions;
+                },
+                options () {
+                    return that.optionExtensions;
                 },
                 subaction ( name, actionName, actionType ) {
                     return that.subactions[ actionName ]?.[ actionType ]?.[ name ];
@@ -97,6 +101,14 @@ module.exports = Toolkit.module( ModuleGlobals => {
                         that.subactions[ actionModule.parent ][ actionModule.type ][ actionModule.name ] = actionModule;
                     }
                     return subActions;
+                },
+                option ( optionModule ) {
+                    return that.optionExtensions = Object.assign( that.optionExtensions, optionModule );
+                },
+                options ( ...optionModules ) {
+                    for ( const optionMoule of optionModules )
+                        that.optionExtensions = Object.assign( that.optionExtensions, optionModule );
+                    return optionModules;
                 },
                 action ( actionModule ) {
                     if ( that.actions[ actionModule.name ] )

@@ -34,35 +34,46 @@
 */
 
 const Toolkit = require( '../../shared/toolkit' );
-const TabaneDocumentBase = require( './TabaneDocumentBase' );
 
 module.exports = Toolkit.module( ModuleGlobals => {
-    return class TabaneSingularDocument extends TabaneDocumentBase {
-        constructor ( data, optionExtensions = {} ) {
-            // Initialize the base
-            super( ModuleGlobals.OptionExtensions );
-            
-            // Define the unscopable section and the
-            // temporary data variable.
-            const unscope = this[ Symbol.unscopables ], tmpdata = this.getData();
-            
-            // Check if the action exists, if so inherit
-            // it's options.
-            if ( !ModuleGlobals.Actions[ data.action ]?.options )
-                throw new ModuleGlobals.Errors.TabaneDocumentError( `Given action with the name "${ data.action }" does not exist.` );
-            tmpdata.action = data.action;
-            Object.assign( tmpdata, ModuleGlobals.Actions[ data.action ].options );
-            
-            // Append option extensions to the document
-            // options.
-            Object.assign( tmpdata, optionExtensions );
-            
-            // Perform strict merging
-            unscope.data = Object.strict( tmpdata, data );
-        }
-        perform ( path, ...extras ) {
-            let data = this.getData();
-            return ModuleGlobals.Actions[ data.action ].action.call( this, path, data, ...extras );
+    const   fss = ModuleGlobals.IO.FileSystem,
+            pth = ModuleGlobals.IO.Path,
+            con = ModuleGlobals.ConsoleHost,
+            clr = ModuleGlobals.ANSI,
+            vm  = ModuleGlobals.Process.JavascriptVM
+    return {
+        name: 'tbn.script',
+        options: {
+            scriptUrl: '',
+            environment: {},
+            skipOnError: false
+        },
+        action ( path, document ) {
+            con.log( `Executing script ${ clr.yellow( document.scriptUrl ) }` );
+            function runScript ( scriptURI ) {
+                const modl = { exports: {} };
+                const scriptUrl = scriptURI;
+                const scriptDir = pth.join( scriptURI, '../' );
+                const context = vm.createContext( {
+                    ConsoleHost: con,
+                    IO: ModuleGlobals.IO,
+                    console,
+                    Object,
+                    CWD: path,
+                    module: modl,
+                    imports: function ( id ) {
+                        return runScript( pth.join( scriptDir, id.endsWith( '.js' ) ? id : id + '.js' ) );
+                    },
+                    __filename: scriptUrl,
+                    __dirname: scriptDir,
+                    ...document.environment
+                } );
+                const script = new vm.Script( fss.readFileSync( scriptUrl, { encoding: 'utf-8' } ), { filename: scriptUrl } );
+                script.runInContext( context );
+                return modl.exports ?? modl;
+            }
+            runScript( pth.join( path, document.scriptUrl ) );
+            return {};
         }
     }
 } );

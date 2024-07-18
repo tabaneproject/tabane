@@ -81,6 +81,7 @@ class Tabane {
             './core/actions/fs.touch',
             './core/actions/fs.rm',
             './core/actions/os.shell',
+            './core/actions/tbn.script',
             './core/actions/tbn.compile',
             './core/actions/tbn.bundle'
         ].map( modStr => {
@@ -92,13 +93,14 @@ class Tabane {
         [
             './core/transits/S_ESConv',
             './core/transits/S_Tetoset',
-            './core/transits/T_CrossNonOpt'
+            './core/transits/T_CrossNonOpt',
+            './core/transits/T_CrossModule'
         ].map( modStr => {
             // Execute a sample transit
             ITransitManager.Execute( {
                 code: Library.IO.FileSystem.readFileSync( require.resolve( modStr ), { encoding: 'utf-8' } ),
                 options: {
-                    globals: { Library }
+                    globals: { Library, SupersetManager }
                 }
             } );
         } );
@@ -107,13 +109,13 @@ class Tabane {
         Transits.forEach( tran => ITransitManager.Execute( {
             code: tran,
             options: {
-                globals: { Library }
+                globals: { Library, SupersetManager }
             }
         } ) );
         
         // Import Document Classes
         const   TabaneDocumentBase = require( './core/objects/TabaneDocumentBase' ),
-                TabaneSingularDocument = require( './core/objects/TabaneSingularDocument' ).module( { Errors, Actions: ITransit.get.actions() } );
+                TabaneSingularDocument = require( './core/objects/TabaneSingularDocument' ).module( { Errors, Actions: ITransit.get.actions(), OptionExtensions: ITransit.get.options() } );
         const DocumentModels = {
             TabaneDocumentBase,
             TabaneSingularDocument,

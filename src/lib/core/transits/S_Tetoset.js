@@ -130,6 +130,63 @@ function TetosetExtensions () {
         }
     }
     
+    // Here comes the Class Extensions
+    function ClassInterfaceDeclarationExtension ( node ) {
+        const copied = Object.assign( {}, node );
+        if ( copied.superClass?.type === 'ObjectExpression' ) {
+            if ( copied.superClass.properties.length === 1 ) {
+                copied.superClass = {
+                    type: 'MemberExpression',
+                    computed: false,
+                    optional: false,
+                    object: copied.superClass.properties[0],
+                    property: { type: 'Identifier', name: 'constructor' }
+                };
+                copied.type = 'ClassExpression';
+                return {
+                    type: 'VariableDeclaration',
+                    kind: 'const',
+                    declarations: [
+                        {
+                            type: 'VariableDeclarator',
+                            id: copied.id,
+                            init: {
+                                type: 'NewExpression',
+                                callee: copied,
+                                arguments: []
+                            }
+                        }
+                    ]
+                }
+            }
+            copied.superClass = undefined;
+            copied.type = 'ClassExpression';
+            return {
+                type: 'VariableDeclaration',
+                kind: 'const',
+                declarations: [
+                    {
+                        type: 'VariableDeclarator',
+                        id: copied.id,
+                        init: {
+                            type: 'NewExpression',
+                            callee: copied,
+                            arguments: []
+                        }
+                    }
+                ]
+            }
+        }
+        copied.superClass = {
+            type: 'MemberExpression',
+            computed: false,
+            optional: false,
+            object: copied.superClass.argument,
+            property: { type: 'Identifier', name: 'constructor' }
+        };
+        return copied;
+    }
+    
     // Our void extensions can be an expression statement
     // and it usually means we are defining a swallowing
     // function :3
@@ -155,7 +212,23 @@ function TetosetExtensions () {
             )
         ) return Object.redefine( node, VoidExpressionExtension( node.argument?.argument ) ?? node );
     }
-    return { ExpressionStatement, UnaryExpression }
+    function ClassDeclaration ( node ) {
+        if (
+            !node.id
+            || !node.superClass
+            || !( node.superClass.type === 'ObjectExpression' || node.superClass.type === 'UnaryExpression' )
+        ) return;
+        if (
+            node.superClass.type === 'ObjectExpression'
+            && node.superClass?.properties?.length > 1
+        ) throw new Error( 'To create an interface-ified class, Extending object must contain one or no extension.' );
+        if (
+            node.superClass.type === 'UnaryExpression'
+            && node.superClass?.operator !== '~'
+        ) throw new Error( 'To create a class that inherits an interface, you need to use tilde (~) for the unary expression.' );
+        return Object.redefine( node, ClassInterfaceDeclarationExtension( node ) ?? node );
+    }
+    return { ExpressionStatement, UnaryExpression, ClassDeclaration }
 }
 
 Transit(

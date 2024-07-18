@@ -49,6 +49,7 @@ function ESConvImportTransformer () {
             return Object.redefine( node, requireCallExp );
         
         // Other Syntaxes
+        const identifierCode = ( Math.floor( ( Math.random() * 65535 ) ) ).toString( 16 ).padStart( 4, '0' );
         switch ( node.specifiers[ 0 ].type ) {
             // Syntax: import lib from 'lib' ->
             case 'ImportDefaultSpecifier': return Object.redefine( node, {
@@ -58,14 +59,50 @@ function ESConvImportTransformer () {
                     type: 'VariableDeclarator',
                     id: node.specifiers[ 0 ].local,
                     init: {
-                        type: 'MemberExpression',
-                        object: requireCallExp,
-                        computed: false,
-                        optional: true,
-                        property: {
-                            type: 'Identifier',
-                            name: 'default'
-                        }
+                        type: "SequenceExpression",
+                        expressions: [ {
+                                type: "AssignmentExpression",
+                                operator: "=",
+                                left: {
+                                    type: "Identifier",
+                                    name: "__tabane_import_test_" + identifierCode
+                                },
+                                right: requireCallExp
+                            },
+                            {
+                                type: "ConditionalExpression",
+                                test: {
+                                    type: "MemberExpression",
+                                    object: {
+                                        type: "Identifier",
+                                        name: "__tabane_import_test_" + identifierCode
+                                    },
+                                    property: {
+                                        type: "Identifier",
+                                        name: "__tabane_es_module"
+                                    },
+                                    computed: false,
+                                    optional: false
+                                },
+                                consequent: {
+                                    type: "MemberExpression",
+                                    object: {
+                                        type: "Identifier",
+                                        name: "__tabane_import_test_" + identifierCode
+                                    },
+                                    property: {
+                                        type: "Identifier",
+                                        name: "default"
+                                    },
+                                    computed: false,
+                                    optional: false
+                                },
+                                alternate: {
+                                    type: "Identifier",
+                                    name: "__tabane_import_test_" + identifierCode
+                                }
+                            }
+                        ]
                     }
                 } ]
             } );
@@ -120,10 +157,32 @@ function ESConvExportTransformer () {
                     type: 'MemberExpression',
                     computed: false,
                     optional: false,
-                    object: { type: 'Identifier', name: 'exports' },
-                    property: { type: 'Identifier', name: 'default' }
+                    object: { type: 'Identifier', name: 'module' },
+                    property: { type: 'Identifier', name: 'exports' }
                 },
-                right: node.declaration
+                right: {
+                    type: 'ObjectExpression',
+                    properties: [
+                        {
+                            type: 'Property',
+                            method: false,
+                            shorthand: false,
+                            computed: false,
+                            kind: 'init',
+                            key: { type: 'Identifier', name: '__tabane_es_module' },
+                            value: { type: 'Literal', value: true, raw: 'true' }
+                        },
+                        {
+                            type: 'Property',
+                            method: false,
+                            shorthand: false,
+                            computed: false,
+                            kind: 'init',
+                            key: { type: 'Identifier', name: 'default' },
+                            value: node.declaration
+                        }
+                    ]
+                }
             }
         } );
     }
@@ -173,7 +232,44 @@ function ESConvExportTransformer () {
                     right: node.declaration
                 }
             } );
-        }
+        } else if ( node.specifiers ) return Object.redefine( node, {
+            type: 'ExpressionStatement',
+            expression: {
+                type: 'UnaryExpression',
+                operator: '~',
+                prefix: true,
+                argument: {
+                    type: 'CallExpression',
+                    arguments: [],
+                    optional: false,
+                    callee: {
+                        type: 'FunctionExpression',
+                        expression: false,
+                        generator: false,
+                        async: false,
+                        params: [],
+                        body: {
+                            type: 'BlockStatement',
+                            body: node.specifiers.map( decl => ( {
+                                type: 'ExpressionStatement',
+                                expression: {
+                                    type: 'AssignmentExpression',
+                                    operator: '=',
+                                    left: {
+                                        type: 'MemberExpression',
+                                        computed: false,
+                                        optional: false,
+                                        object: { type: 'Identifier', name: 'exports' },
+                                        property: decl.exported ?? decl.local
+                                    },
+                                    right: decl.local
+                                }
+                            } ) )
+                        }
+                    }
+                }
+            }
+        } );
     }
     function ExportAllDeclaration ( node ) {
         return Object.redefine( node, {

@@ -45,9 +45,15 @@ const { homedir } = require( 'os' );
 // Define some paths :3
 const HomeDir = homedir(), CWD = process.cwd();
 
-const Paths = {
-    TabaneUserConfStore: Library.IO.Path.join( HomeDir, '.tabane' ),
-    TabaneLocalConfStore: Library.IO.Path.join( CWD, '.tabane' )
+const   TabaneUserConfStoreDir  = Library.IO.Path.join( HomeDir, '.tabane' ),
+        TabaneLocalConfStoreDir = Library.IO.Path.join( CWD, '.tabane' );
+
+global.Paths = {
+    TabaneUserConfStoreDir,
+    TabaneLocalConfStoreDir,
+    TabaneUserConfStore: Library.IO.Path.join( TabaneUserConfStoreDir, 'config.json' ),
+    TabaneLocalConfStore: Library.IO.Path.join( TabaneLocalConfStoreDir, 'config.json' ),
+    HomeDir, CWD
 };
 
 // Prepare Configurations
@@ -59,13 +65,17 @@ global.Configuration = new ConfigurationStore(
             quiet: false
         }
     },
-    Paths.TabaneUserConfStore,
-    Paths.TabaneLocalConfStore
+    Paths.TabaneUserConfStoreDir,
+    Paths.TabaneLocalConfStoreDir
 );
 
+// Write default configuration to the user configuration store.
+Configuration.writeDefaults( Paths.TabaneUserConfStoreDir );
+
+// Prepare transits (plugins)
 global.Transits = new TransitsStore(
-    Library.IO.Path.join( Paths.TabaneUserConfStore,  'transits' ),
-    Library.IO.Path.join( Paths.TabaneLocalConfStore, 'transits' )
+    Library.IO.Path.join( Paths.TabaneUserConfStoreDir,  'transits' ),
+    Library.IO.Path.join( Paths.TabaneLocalConfStoreDir, 'transits' )
 )
 
 // Create a Console Host
@@ -99,7 +109,8 @@ ifacepatch( Command, Console.CWrapper.Colors );
 const operations = [
     require( './operations/make' ),
     require( './operations/init' ),
-    require( './operations/run' )
+    require( './operations/run' ),
+    require( './operations/config' )
 ];
 
 // Define the program
@@ -107,13 +118,20 @@ program
     .name( Package.name.split( '/' ).pop() )
     .description( Package.description )
     .version( Package.version )
-    .option( '--no-color', 'Disable colors' );
+    .option( '--no-color', 'Disable colors' )
+    .option( '-d,--debug', 'Show errors in detail' );
 
 // Append the commands to the program
-for ( const operation of operations ) {
-    const cmd = program.command( operation.command ).description( operation.description ?? '<no information given>' );
-    if ( operation.action ) cmd.action( operation.action );
+function appendOperations ( operationList, parent = program ) {
+    for ( const operation of operationList ) {
+        const cmd = parent.command( operation.command ).description( operation.description ?? '<no information given>' );
+        if ( operation.action ) cmd.action( operation.action );
+        if ( operation.options ) operation.options.forEach( option => cmd.option( option.flags, option?.description, option?.defaultValue ) );
+        if ( operation.subactions ) appendOperations( operation.subactions, cmd );
+    }
 }
+
+appendOperations( operations );
 
 // Parse the program
 program.parse();

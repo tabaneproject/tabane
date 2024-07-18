@@ -81,19 +81,25 @@ module.exports = Toolkit.module( ModuleGlobals => {
             const acornParse = acorn.parse, acornParseExp = acorn.parseExpressionAt;
             
             // Pretransformed walkers
-            const superVal = Object.values( that.supersets ).map( e => e?.walker )
-            let superPack = Object.keys( Object.assign( {}, ...superVal ) ).map( 
-                e => superVal.map( x => !!x ? x[ e ] : undefined ).filter( e => !!e )
-            ).filter( e => e ).flat();
-            let arrpack = {}
-            superPack.forEach( e => {
-                Object.entries( e ).forEach( ( [ k, v ] ) => {
-                    arrpack[ k ] ??= [];
-                    arrpack[ k ].push( v );
-                } );
+            const simpleWalkers = {};
+            const fullWalkers = [];
+            const sections = Object.values( that.supersets );
+            sections.forEach( e => {
+                if ( e?.walker?.length ) {
+                    // This is a simple walker
+                    e.walker.forEach( walker => {
+                        Object.entries( walker ).forEach( ( [ nodeName, callback ] ) => {
+                            if ( !simpleWalkers[ nodeName ] ) return simpleWalkers[ nodeName ] = [ callback ];
+                            simpleWalkers[ nodeName ].push( callback );
+                        } )
+                    } )
+                } else {
+                    // this is a full walker, directly add it
+                    fullWalkers.push( e );
+                }
             } );
             let pack = Object.fromEntries(
-                Object.entries( arrpack ).map( e => [ 
+                Object.entries( simpleWalkers ).map( e => [ 
                     e[ 0 ],
                     function ( ...args ) { 
                         e[ 1 ].forEach( x => x.call( this, ...args ) )
@@ -104,12 +110,14 @@ module.exports = Toolkit.module( ModuleGlobals => {
             // Hooked Functions
             acorn.parse = function ( ...args ) {
                 const output = acornParse.call( acorn, ...args );
-                AcornWalk.simple( output, pack );
+                if ( sections.length > 0 ) AcornWalk.simple( output, pack );
+                if ( fullWalkers.length > 0 ) fullWalkers.forEach( e => AcornWalk.fullAncestor( output, e ) );
                 return output;
             }
             acorn.parseExpressionAt = function ( ...args ) {
                 const output = acornParseExp.call( acorn, ...args );
-                AcornWalk.simple( output, pack );
+                if ( sections.length > 0 ) AcornWalk.simple( output, pack );
+                if ( fullWalkers.length > 0 ) fullWalkers.forEach( e => AcornWalk.fullAncestor( output, e ) );
                 return output;
             }
             

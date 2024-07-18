@@ -41,6 +41,7 @@ module.exports = {
     command: 'make [preset]',
     description: 'run actions based on preset name',
     action ( preset = 'default' ) {
+        const opts = this.parent._optionValues;
         
         // Get current working directory and define
         // the configuration locations
@@ -84,7 +85,8 @@ module.exports = {
         
         // Log the make preset and perform operations
         Conhost.log( `Make Preset: ${ Library.ANSI.gray( preset ) }` );
-        
+        if ( opts.debug )
+            return IDocument.perform( cwd );
         try {
             IDocument.perform( cwd );
         } catch (error) {

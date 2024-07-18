@@ -49,6 +49,8 @@ module.exports = Toolkit.module( ModuleGlobals => {
             sourceDir: '',
             outputDir: 'build',
             relaxed: false,
+            ecmaVersion: 'latest',
+            sourceType: 'module',
             outscope: {
                 enabled: false,
                 outputDir: 'libs.tbn/'
@@ -95,8 +97,8 @@ module.exports = Toolkit.module( ModuleGlobals => {
             
             // Define a base Acorn configuration
             const aconf = {
-                ecmaVersion: 'latest',
-                sourceType: 'module',
+                ecmaVersion: document.ecmaVersion ?? 'latest',
+                sourceType: document.sourceType ?? 'module',
                 allowHashBang: true
             };
             
@@ -112,7 +114,7 @@ module.exports = Toolkit.module( ModuleGlobals => {
             // perform caching to prevent infinite
             // loops
             const conversionCache = {};
-            function RecursiveRequireWalk ( rPath, absPath ) {
+            function RecursiveRequireWalk ( rPath, absPath, type = 'script' ) {
                 // If we have the path in the cache, return it lol
                 if ( rPath !== mainFilePath && conversionCache[ rPath ] ) return;
                 
@@ -121,15 +123,26 @@ module.exports = Toolkit.module( ModuleGlobals => {
                 bcon.next.log( `Processing ${ clr.yellow( rPath.replace( sourcePath, '.' ) ) }` );
                 
                 // Gather the code's AST by given path
-                const AST = acorn.parse(
+                const AST = type === 'script' ? acorn.parse(
                     fss.readFileSync(
                         rPath,
                         { encoding: 'utf-8' }
                     ), aconf
-                );
+                ) : {
+                    type: 'Program',
+                    body: [ {
+                        type: 'ReturnStatement',
+                        argument: acorn.parseExpressionAt(
+                            fss.readFileSync(
+                                rPath,
+                                { encoding: 'utf-8' }
+                            ), 0, aconf
+                        )
+                    } ]
+                };
                 
                 // Walk through the require/import statements
-                acorn.inspectRequires( AST, value => {
+                if ( type === 'script' ) acorn.inspectRequires( AST, value => {
                     const absLoc = acorn.fetchPackage( value.startsWith( '/' ) ? value : pth.join( rPath, '../' , value ) );
                     if ( !absLoc.type || ( !absLoc.url.includes( sourcePath ) && !document.outscope?.enabled ) )
                         return value;
@@ -138,7 +151,7 @@ module.exports = Toolkit.module( ModuleGlobals => {
                                             coLibPath,
                                             pth.basename( value.endsWith( '.js' ) ? value : value + '.js' )
                                         ) : absLoc.url
-                    RecursiveRequireWalk( absLoc.url, copyPath );
+                    RecursiveRequireWalk( absLoc.url, copyPath, absLoc.type );
                     conversionCache[ absLoc.url ] = true;
                     const newPath = pth.relative( pth.dirname( rPath ), copyPath );
                     return !newPath.startsWith( '.' ) && !newPath.startsWith( '/' ) ? `./${ newPath }` : newPath;

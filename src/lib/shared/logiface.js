@@ -78,7 +78,7 @@ class ConsoleInterface {
         this.ident = ident;
         this._base = function ( funcname, color, ...args ) {
             const j = args.shift();
-            if ( !this.silent )
+            if ( !this.silent || funcname !== 'error' )
                 ( typeof funcname === 'function' ? funcname : console[ funcname ] )( CWrapper.Colors[ color ?? 'reset' ]( this.ident == '' ? ConsoleInterface.idents.sta : this.ident ) + j, ...args );
             return {
                 next: new ConsoleInterface( this.silent, ( this.ident == '' ? '  ' : this.ident ) + ConsoleInterface.idents.next ),
@@ -92,7 +92,7 @@ class ConsoleInterface {
     warn ( ...args ) { return this._base( 'warn', 'yellow', ...args ); }
     error ( ...args ) { return this._base( 'error', 'red', ...args ); }
     verbose ( ...args ) { return this._base( () => process.verbose ? console.log( ...args ) : false, 'reset', ...args ); }
-    newline () { console.log( '' ); }
+    newline () { if ( !this.silent ) console.log( '' ); }
 };
 
 module.exports = {

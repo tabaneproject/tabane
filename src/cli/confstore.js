@@ -33,22 +33,44 @@
     THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
 */
 
+const ObjNt = require( './utils/objectnotation' );
+
+function parseValue ( val ) {
+    return ( { 'true': true, 'false': false } )[ val ]
+            ?? ( vax = parseFloat( val ), isNaN( vax ) ? val : vax );
+}
+
 class ConfStore {
     constructor ( defaults, ...storeUrls ) {
+        this._defaults = defaults;
         this._config = Object.assign( {}, defaults );
         storeUrls.forEach( url => {
             if ( !Library.IO.FileSystem.existsSync( url ) || !Library.IO.FileSystem.existsSync( Library.IO.Path.join( url, 'config.json' ) ) ) return;
             this._config = Object.with( this._config, require( Library.IO.Path.join( url, 'config.json' ) ) );
         } );
     }
+    writeDefaults ( storeUrl ) {
+        const storePath = Library.IO.Path.join( storeUrl, 'config.json' );
+        if ( Library.IO.FileSystem.existsSync( storePath ) ) return;
+        if ( !Library.IO.FileSystem.existsSync( storeUrl ) )
+            Library.IO.FileSystem.mkdirSync( storeUrl, { recursive: true } );
+        Library.IO.FileSystem.writeFileSync( storePath, JSON.stringify( this._defaults ) );
+    }
     getConfig ( namespace ) {
-        const spaces = namespace.split( '.' );
-        let tempval = this._config[ spaces.shift() ];
-        for ( const space of spaces ) {
-            if ( !tempval?.[ space ] ) return undefined;
-            tempval = tempval[ space ];
-        }
-        return tempval;
+        return ObjNt.get( this._config, namespace );
+    }
+    setConfig ( storeUrl, namespace, value ) {
+        const storePath = Library.IO.Path.join( storeUrl, 'config.json' );
+        if ( !Library.IO.FileSystem.existsSync( storeUrl ) )
+            Library.IO.FileSystem.mkdirSync( storeUrl, { recursive: true } );
+        const conf = Library.IO.FileSystem.existsSync( storePath ) ? require( storePath ) : {};
+        ObjNt.set( conf, namespace, parseValue( value ) )
+        Library.IO.FileSystem.writeFileSync( storePath, JSON.stringify( conf ) );
+    }
+    listConfig ( storeUrl = null ) {
+        let conf = this._config;
+        if ( storeUrl ) conf = require( Library.IO.Path.join( storeUrl, 'config.json' ) );
+        return ObjNt.list( conf );
     }
 }
 
