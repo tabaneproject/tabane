@@ -6,7 +6,7 @@ Tabane is a Javascript Project Manager that can be used for bundling files for w
 
 You can install Tabane to your system either using NPM registry or manually. To download using NPM registry, run this command:
 ```sh
-npm install @tabaneproject/tabane
+npm install -g @tabaneproject/tabane
 ```
 After that, make sure it works by running `tabane help` command
 For more information, please check the [wiki](https://github.com/tabaneproject/tabane/wiki) :3
