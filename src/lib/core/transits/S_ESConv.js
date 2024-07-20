@@ -46,7 +46,7 @@ function ESConvImportTransformer () {
 
         // Syntax: import 'lib' ->
         if ( node.specifiers.length === 0 )
-            return Object.redefine( node, requireCallExp );
+            return Object.redefine( node, { type: 'ExpressionStatement', expression: requireCallExp } );
         
         // Other Syntaxes
         const identifierCode = ( Math.floor( ( Math.random() * 65535 ) ) ).toString( 16 ).padStart( 4, '0' );
