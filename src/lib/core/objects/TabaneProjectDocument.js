@@ -52,15 +52,14 @@ module.exports = Toolkit.module( ModuleGlobals => {
             if ( data.actions ) {
                 let options = Object.strict( {
                     global: {},
-                    actions: [],
-                    ...optionExtensions
+                    actions: []
                 }, data );
                 options.actions.forEach( option => {
                     if ( typeof option === "string" ) {
-                        const subProject = new TabaneProjectDocument( presets[ option ] );
+                        const subProject = new TabaneProjectDocument( presets[ option ], presets, options.global );
                         return this.actions.push( ...subProject.actions );
                     }
-                    this.actions.push( new ModuleGlobals.TabaneSingularDocument( Object.with( options.global, option ), optionExtensions ) )
+                    this.actions.push( new ModuleGlobals.TabaneSingularDocument( option, Object.with( options.global, optionExtensions ) ) )
                 } );
             } else {
                 // We are in SingleDoc mode.

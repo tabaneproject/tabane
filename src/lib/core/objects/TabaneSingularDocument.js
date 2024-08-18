@@ -56,7 +56,6 @@ module.exports = Toolkit.module( ModuleGlobals => {
             // Append option extensions to the document
             // options.
             Object.assign( tmpdata, optionExtensions );
-            
             // Perform strict merging
             unscope.data = Object.strict( tmpdata, data );
         }
