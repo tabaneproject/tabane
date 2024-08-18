@@ -60,7 +60,7 @@ module.exports = Toolkit.module( ModuleGlobals => {
                         const subProject = new TabaneProjectDocument( presets[ option ] );
                         return this.actions.push( ...subProject.actions );
                     }
-                    this.actions.push( new ModuleGlobals.TabaneSingularDocument( { ...Object.with( options.global, option ) }, optionExtensions ) )
+                    this.actions.push( new ModuleGlobals.TabaneSingularDocument( Object.with( options.global, option ), optionExtensions ) )
                 } );
             } else {
                 // We are in SingleDoc mode.
