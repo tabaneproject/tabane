@@ -44,14 +44,14 @@ module.exports = Toolkit.module( ModuleGlobals => {
         name: 'fs.clean:dir',
         options: {
             dir: 'build',
-            skippable: true
+            skipOnError: true
         },
         action ( path, document ) {
             let csn = con.log( `Cleaning ${ clr.yellow( document.dir ) } Directory.` ).end;
             if ( fss.existsSync( pth.join( path, document.dir ) ) ) {
                 fss.rmSync( pth.join( path, document.dir ), { recursive: true } );
                 fss.mkdirSync( pth.join( path, document.dir ) );
-            } else if ( document.skippable ) {
+            } else if ( document.skipOnError ) {
                 csn.warn( `Given directory doesn't exist, Skipping.` );
             } else {
                 csn.error( `Given directory doesn't exist, Aborting.` );
