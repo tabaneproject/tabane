@@ -64,7 +64,7 @@ module.exports = Toolkit.module( ModuleGlobals => {
             let csn = con.log( `Creating ${ clr.yellow( document.dir ) } directory.` ).end;
             if ( fexists ) csn.log( 'Directory exists, skipping.' );
             
-            // Perform the copy operation.
+            // Perform the mkdir operation.
             fss.mkdirSync( destination, { recursive: true } );
             
             // Return nothing hehe :3
