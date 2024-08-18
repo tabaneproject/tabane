@@ -79,6 +79,7 @@ class Tabane {
             './core/actions/fs.clean.dir',
             './core/actions/fs.copy',
             './core/actions/fs.touch',
+            './core/actions/fs.mkdir',
             './core/actions/fs.rm',
             './core/actions/os.shell',
             './core/actions/tbn.script',
