@@ -57,7 +57,7 @@ module.exports = Toolkit.module( ModuleGlobals => {
                         shell: true,
                         stdio: [ 0, 0, 0 ],
                         env: {
-                            ...process.env
+                            ...process.env,
                             TABANE_DOCPATH: path,
                             TABANE_SKIPPABLE: document.skipOnError,
                             TABANE_PROJECT_TAG: document.tag ?? 'unknown',
