@@ -78,7 +78,7 @@ class ConsoleInterface {
         this.ident = ident;
         this._base = function ( funcname, color, ...args ) {
             const j = args.shift();
-            if ( !this.silent || funcname !== 'error' )
+            if ( !this.silent || funcname === 'error' )
                 ( typeof funcname === 'function' ? funcname : console[ funcname ] )( CWrapper.Colors[ color ?? 'reset' ]( this.ident == '' ? ConsoleInterface.idents.sta : this.ident ) + j, ...args );
             return {
                 next: new ConsoleInterface( this.silent, ( this.ident == '' ? '  ' : this.ident ) + ConsoleInterface.idents.next ),
