@@ -93,7 +93,7 @@ module.exports = {
                     process.exit( 120 );
                 }
                 Configuration.setConfig( Library.IO.Path.join( targetPath, '../' ), key, value );
-                Conhost.log( `Edited key ${ Library.ANSI.yellow( key ) } in ${ Library.ANSI.magenta( 'global' ) } scope to ${ Library.ANSI.green( value ) }` );
+                Conhost.log( `Edited key ${ Library.ANSI.yellow( key ) } in ${ Library.ANSI.magenta( targetPath === UserConfPath ? 'global' : 'project' ) } scope to ${ Library.ANSI.green( value ) }` );
             }
         },
         {
@@ -110,7 +110,7 @@ module.exports = {
                     process.exit( 120 );
                 }
                 Configuration.setConfig( Library.IO.Path.join( targetPath, '../' ), key, undefined );
-                Conhost.log( `Deleted key ${ Library.ANSI.yellow( key ) } in ${ Library.ANSI.magenta( 'global' ) } scope` );
+                Conhost.log( `Deleted key ${ Library.ANSI.yellow( key ) } in ${ Library.ANSI.magenta( targetPath === UserConfPath ? 'global' : 'project' ) } scope` );
             }
         }
     ]
