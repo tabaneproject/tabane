@@ -131,7 +131,8 @@ module.exports = Toolkit.module( ModuleGlobals => {
                     if (
                         node.callee &&
                         node.callee.type == 'Identifier' &&
-                        node.callee.name == 'require'
+                        node.callee.name == 'require' &&
+                        node.arguments[ 0 ].type == 'Literal'
                     ) {
                         requires.push( node.arguments[ 0 ].value );
                         node.arguments[ 0 ].value = mapper( node.arguments[ 0 ].value, node );
@@ -149,6 +150,9 @@ module.exports = Toolkit.module( ModuleGlobals => {
                     ExportAllDeclaration: walker,
                     ExportNamedDeclaration: walker
                 } );
+                
+                // After inspecting, return all the elements
+                return requires;
             }
             acorn.packageTypes = {
                 '.js': { type: 'script' },
