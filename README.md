@@ -1,4 +1,4 @@
-![image](https://github.com/tabaneproject/tabane/assets/157493292/16a30683-6d77-4e0d-b777-498c2186a6de)
+![tabane](https://github.com/user-attachments/assets/d8090ab9-787d-4ebf-acb6-0977d7645d5e)
 
 ![BasedPkg](https://img.shields.io/badge/Javascript-121216?style=flat-square&labelColor=121216&logo=javascript&logoColor=c0c0c0&color=c0c0c0&label=Powered%20by) ![CommitActivity](https://img.shields.io/github/commit-activity/w/tabaneproject/tabane?style=flat-square&labelColor=121216&logo=github&logoColor=a0a0a0&color=c0c0c0) ![GitHub last commit](https://img.shields.io/github/last-commit/tabaneproject/tabane?style=flat-square&labelColor=121216&logo=github&logoColor=a0a0a0&color=c0c0c0)<br>
 
